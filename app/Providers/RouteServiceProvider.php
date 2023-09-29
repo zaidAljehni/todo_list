@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\constants\RouteConstants;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
@@ -27,6 +28,13 @@ class RouteServiceProvider extends ServiceProvider
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
+
+        RateLimiter::for(
+            RouteConstants::RATE_LIMIT_NAME_TASK,
+            function (Request $request) {
+                return Limit::perMinute(15);
+            }
+        );
 
         $this->routes(function () {
             Route::middleware('api')
